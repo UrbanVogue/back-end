@@ -18,9 +18,10 @@ builder.Services.AddControllersWithViews();
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-
+if (seed)
+{
     SeedData.EnsureSeedData(connectionString);
-
+}
 
 builder.Services.AddDbContext<AspNetCoreIdentityDbContext>(options => options.UseSqlServer(connectionString));
 
