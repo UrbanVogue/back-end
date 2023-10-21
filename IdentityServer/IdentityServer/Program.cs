@@ -1,15 +1,48 @@
 using IdentityServer;
+using System.Reflection;
+using IdentityServer4.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using IdentityServer.Data;
+
+var seed = args.Contains("/seed");
+if (seed)
+{
+    args = args.Except(new[] { "/seed" }).ToArray();
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+
+    SeedData.EnsureSeedData(connectionString);
+
+
+builder.Services.AddDbContext<AspNetCoreIdentityDbContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AspNetCoreIdentityDbContext>();
+
 builder.Services.AddIdentityServer()
-                .AddInMemoryClients(Config.Clients)
-                .AddInMemoryApiScopes(Config.ApiScopes)
-                .AddInMemoryIdentityResources(Config.IdentityResources)
-                .AddTestUsers(Config.TestUsers)
-                .AddDeveloperSigningCredential();
+    .AddConfigurationStore(options =>
+    {
+        options.ConfigureDbContext = b =>
+            b.UseSqlServer(connectionString,
+                sql => sql.MigrationsAssembly(migrationsAssembly));
+    })
+    .AddOperationalStore(options =>
+    {
+        options.ConfigureDbContext = b =>
+            b.UseSqlServer(connectionString,
+                sql => sql.MigrationsAssembly(migrationsAssembly));
+
+        options.EnableTokenCleanup = true;
+    })
+    .AddDeveloperSigningCredential();
 
 var app = builder.Build();
 
