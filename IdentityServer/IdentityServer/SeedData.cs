@@ -6,6 +6,8 @@ using IdentityServer4.EntityFramework.Storage;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Security.Claims;
 using static IdentityServer4.IdentityServerConstants;
 
@@ -13,96 +15,70 @@ namespace IdentityServer
 {
     public class SeedData
     {
-        public static void EnsureSeedData(string connectionString)
+        public async static Task EnsureSeedDataAsync(IServiceProvider serviceProvider)
         {
-            var services = new ServiceCollection();
-            services.AddLogging();
-            services.AddDbContext<AspNetCoreIdentityDbContext>(
-                options => options.UseSqlServer(connectionString)
-            );
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+                await persistedGrantDbContext.Database.MigrateAsync();
 
-            services
-                .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AspNetCoreIdentityDbContext>()
-                .AddDefaultTokenProviders();
-
-            services.AddOperationalDbContext(
-                options =>
+                var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                await configurationDbContext.Database.MigrateAsync();
+                var clientsExist = await configurationDbContext.Clients.AnyAsync();
+                if (!clientsExist)
                 {
-                    options.ConfigureDbContext = db =>
-                        db.UseSqlServer(
-                            connectionString,
-                            sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
-                        );
+                   await EnsureSeedConfigDataAsync(configurationDbContext);
                 }
-            );
-            services.AddConfigurationDbContext(
-                options =>
-                {
-                    options.ConfigureDbContext = db =>
-                        db.UseSqlServer(
-                            connectionString,
-                            sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
-                        );
-                }
-            );
 
-            var serviceProvider = services.BuildServiceProvider();
-
-            using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
-
-            var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
-            context.Database.Migrate();
-
-            EnsureSeedData(context);
-
-            var ctx = scope.ServiceProvider.GetService<AspNetCoreIdentityDbContext>();
-            ctx.Database.Migrate();
-            EnsureUsers(scope);
+                var aspNetCoreIdentityDbContext = scope.ServiceProvider.GetRequiredService<AspNetCoreIdentityDbContext>();
+                await aspNetCoreIdentityDbContext.Database.MigrateAsync();
+                await EnsureSeedUsersAsync(serviceProvider);
+            }
         }
 
-        private static void EnsureUsers(IServiceScope scope)
+        private async static Task EnsureSeedUsersAsync(IServiceProvider serviceProvider)
         {
-            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-            var angella = userMgr.FindByNameAsync("angella").Result;
-            if (angella == null)
+            using (var scope = serviceProvider.CreateScope())
             {
-                angella = new IdentityUser
-                {
-                    UserName = "angella",
-                    Email = "angella.freeman@email.com",
-                    EmailConfirmed = true
-                };
-                var result = userMgr.CreateAsync(angella, "Pass123$").Result;
-                if (!result.Succeeded)
-                {
-                    throw new Exception(result.Errors.First().Description);
-                }
+                var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-                result =
-                    userMgr.AddClaimsAsync(
-                        angella,
-                        new Claim[]
-                        {
+                var angella = await userMgr.FindByNameAsync("angella");
+                if (angella == null)
+                {
+                    angella = new IdentityUser
+                    {
+                        UserName = "angella",
+                        Email = "angella.freeman@email.com",
+                        EmailConfirmed = true
+                    };
+                    var result = await userMgr.CreateAsync(angella, "Pass123$");
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+
+                    result = await userMgr.AddClaimsAsync(
+                            angella,
+                            new Claim[]
+                            {
                             new Claim(JwtClaimTypes.Name, "Angella Freeman"),
                             new Claim(JwtClaimTypes.GivenName, "Angella"),
                             new Claim(JwtClaimTypes.FamilyName, "Freeman"),
                             new Claim(JwtClaimTypes.WebSite, "http://angellafreeman.com"),
                             new Claim("location", "somewhere")
-                        }
-                    ).Result;
-                if (!result.Succeeded)
-                {
-                    throw new Exception(result.Errors.First().Description);
+                            });
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
                 }
             }
         }
 
-        private static void EnsureSeedData(ConfigurationDbContext context)
+        private async static Task EnsureSeedConfigDataAsync(ConfigurationDbContext context)
         {
-            if (!context.Clients.Any())
+            if (!(await context.Clients.AnyAsync()))
             {
                 foreach (var client in Config.Clients.ToList())
                 {
@@ -131,19 +107,19 @@ namespace IdentityServer
                         {
                             RedirectUri = uri
                         }).ToList(),
-                        FrontChannelLogoutUri = client.FrontChannelLogoutUri,   
+                        FrontChannelLogoutUri = client.FrontChannelLogoutUri,
                         AllowOfflineAccess = client.AllowOfflineAccess,
                         RequirePkce = client.RequirePkce,
                         RequireConsent = client.RequireConsent,
                         AllowPlainTextPkce = client.AllowPlainTextPkce
                     };
-                    context.Clients.Add(entity);
+                    await context.Clients.AddAsync(entity);
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
 
-            if (!context.IdentityResources.Any())
+            if (!(await context.IdentityResources.AnyAsync()))
             {
                 foreach (var resource in Config.IdentityResources.ToList())
                 {
@@ -162,13 +138,13 @@ namespace IdentityServer
                         }).ToList()
                     };
 
-                    context.IdentityResources.Add(entity);
+                    await context.IdentityResources.AddAsync(entity);
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
 
-            if (!context.ApiScopes.Any())
+            if (!(await context.ApiScopes.AnyAsync()))
             {
                 foreach (var resource in Config.ApiScopes.ToList())
                 {
@@ -191,13 +167,13 @@ namespace IdentityServer
                         }).ToList()
                     };
 
-                    context.ApiScopes.Add(entity);
+                    await context.ApiScopes.AddAsync(entity);
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
 
-            if (!context.ApiResources.Any())
+            if (!(await context.ApiResources.AnyAsync()))
             {
                 foreach (var resource in Config.ApiResources.ToList())
                 {
@@ -227,10 +203,10 @@ namespace IdentityServer
                         }).ToList(),
                     };
 
-                    context.ApiResources.Add(entity);
+                    await context.ApiResources.AddAsync(entity);
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }
