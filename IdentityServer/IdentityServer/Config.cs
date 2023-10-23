@@ -15,7 +15,7 @@ namespace IdentityServer
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
                         ClientSecrets =
                         {
-                            new Secret("ClientSecret1".Sha256())
+                            new Secret("ClientSecret1")
                         },
                         AllowedScopes = { "CatalogAPI.read", "CatalogAPI.write" }
                    },
@@ -24,7 +24,7 @@ namespace IdentityServer
                    new Client
                    {
                      ClientId = "interactive",
-                     ClientSecrets = {new Secret("ClientSecret1".Sha256())},
+                     ClientSecrets = {new Secret("ClientSecret1")},
 
                      AllowedGrantTypes = GrantTypes.Code,
 
