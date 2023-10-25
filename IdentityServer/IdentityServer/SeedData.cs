@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using IdentityModel;
+using IdentityServer.Configurations;
 using IdentityServer.Data;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
@@ -90,7 +91,7 @@ namespace IdentityServer
         {
             if (!(await context.Clients.AnyAsync()))
             {
-                foreach (var client in Config.Clients.ToList())
+                foreach (var client in IdentityServerConfiguration.Clients.ToList())
                 {
 
                     var entity = new IdentityServer4.EntityFramework.Entities.Client
@@ -131,7 +132,7 @@ namespace IdentityServer
 
             if (!(await context.IdentityResources.AnyAsync()))
             {
-                foreach (var resource in Config.IdentityResources.ToList())
+                foreach (var resource in IdentityServerConfiguration.IdentityResources.ToList())
                 {
                     var entity = new IdentityServer4.EntityFramework.Entities.IdentityResource
                     {
@@ -156,7 +157,7 @@ namespace IdentityServer
 
             if (!(await context.ApiScopes.AnyAsync()))
             {
-                foreach (var resource in Config.ApiScopes.ToList())
+                foreach (var resource in IdentityServerConfiguration.ApiScopes.ToList())
                 {
                     var entity = new IdentityServer4.EntityFramework.Entities.ApiScope
                     {
@@ -185,7 +186,7 @@ namespace IdentityServer
 
             if (!(await context.ApiResources.AnyAsync()))
             {
-                foreach (var resource in Config.ApiResources.ToList())
+                foreach (var resource in IdentityServerConfiguration.ApiResources.ToList())
                 {
                     var entity = new IdentityServer4.EntityFramework.Entities.ApiResource
                     {

@@ -1,9 +1,8 @@
-﻿
-using IdentityServer4.Models;
+﻿using IdentityServer4.Models;
 
-namespace IdentityServer
+namespace IdentityServer.Configurations
 {
-    public class Config
+    public class IdentityServerConfiguration
     {
         public static IEnumerable<Client> Clients =>
             new Client[]
@@ -69,7 +68,7 @@ namespace IdentityServer
                   Name = "role",
                   UserClaims = new string[] {"role"}
               }
-                   
+
           };
     }
 }

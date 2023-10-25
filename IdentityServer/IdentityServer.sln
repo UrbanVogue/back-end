@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityS
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{358D603D-2704-4D80-A660-0817BC77CA75}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailService", "EmailService\EmailService.csproj", "{8BF84ABE-3D08-4B15-B227-D1CB494F468D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{358D603D-2704-4D80-A660-0817BC77CA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{358D603D-2704-4D80-A660-0817BC77CA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{358D603D-2704-4D80-A660-0817BC77CA75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BF84ABE-3D08-4B15-B227-D1CB494F468D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BF84ABE-3D08-4B15-B227-D1CB494F468D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BF84ABE-3D08-4B15-B227-D1CB494F468D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BF84ABE-3D08-4B15-B227-D1CB494F468D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
