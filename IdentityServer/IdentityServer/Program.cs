@@ -3,12 +3,18 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using IdentityServer.Data;
-using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer.Configurations;
+using EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLogging();
 
 builder.Services.AddControllersWithViews();
+
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddScoped<IMailSender, MailSender>();
+
 
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -18,6 +24,8 @@ builder.Services.AddDbContext<AspNetCoreIdentityDbContext>(options => options.Us
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AspNetCoreIdentityDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+   opt.TokenLifespan = TimeSpan.FromHours(2));
 
 builder.Services.AddIdentityServer()
     .AddConfigurationStore(options =>
