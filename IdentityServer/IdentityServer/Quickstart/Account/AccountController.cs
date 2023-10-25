@@ -18,8 +18,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Identity.Client;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -320,6 +322,63 @@ namespace IdentityServerHost.Quickstart.UI
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(UserRegistrationModel userModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(userModel);
+            }
+
+            var user = new IdentityUser 
+            { 
+                UserName = userModel.Email.Split("@")[0],
+                Email = userModel.Email,
+                EmailConfirmed = true
+            };       
+
+            var result = await _userManager.CreateAsync(user, userModel.Password);
+            
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.TryAddModelError(error.Code, error.Description);
+                }
+
+                return View(userModel);
+            }
+            
+            result = await _userManager.AddClaimsAsync(
+                    user,
+                    new Claim[]
+                    {
+                            new Claim(JwtClaimTypes.GivenName, userModel.FirstName),
+                            new Claim(JwtClaimTypes.FamilyName, userModel.LastName),
+                    });
+
+            var isuser = new IdentityServerUser(user.Id)
+            {
+                DisplayName = user.UserName
+            };
+
+            await HttpContext.SignInAsync(isuser);
+
+            return Redirect("/diagnostics");
+
+            //await _userManager.AddToRoleAsync(user, "Visitor");
+
+            //return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
 
