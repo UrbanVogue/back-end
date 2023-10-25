@@ -261,7 +261,6 @@ namespace IdentityServerHost.Quickstart.UI
             { 
                 UserName = userModel.Email.Split("@")[0],
                 Email = userModel.Email,
-                EmailConfirmed = true
             };       
 
             var result = await _userManager.CreateAsync(user, userModel.Password);
@@ -293,10 +292,6 @@ namespace IdentityServerHost.Quickstart.UI
             await HttpContext.SignInAsync(isuser);
 
             return Redirect("/diagnostics");
-
-            //await _userManager.AddToRoleAsync(user, "Visitor");
-
-            //return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
 
