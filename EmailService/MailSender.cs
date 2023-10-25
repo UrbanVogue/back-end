@@ -19,24 +19,24 @@ namespace EmailService
             _emailConfig = emailConfig;
         }
 
-        public void SendEmail(Message message)
+        public async Task SendEmailAsync(Message message)
         {
             var emailMessage = CreateEmailMessage(message);
 
-            Send(emailMessage);
+            await SendAsync(emailMessage);
         }
 
-        private void Send(MimeMessage emailMessage)
+        private async Task SendAsync(MimeMessage emailMessage)
         {
             using(var client = new SmtpClient())
             {
                 try
                 {
-                    client.Connect(_emailConfig.SmtpServer, _emailConfig.Port, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, MailKit.Security.SecureSocketOptions.StartTls);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
+                    await client.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
 
-                    client.Send(emailMessage);
+                    await client.SendAsync(emailMessage);
                 }
                 catch (Exception)
                 {
@@ -45,7 +45,7 @@ namespace EmailService
                 }
                 finally
                 {
-                    client.Disconnect(true);
+                    await client.DisconnectAsync(true);
                     client.Dispose();
                 }
             }

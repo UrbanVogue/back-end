@@ -8,6 +8,6 @@ namespace EmailService
 {
     public interface IMailSender
     {
-        public void SendEmail(Message message);
+        public Task SendEmailAsync(Message message);
     }
 }

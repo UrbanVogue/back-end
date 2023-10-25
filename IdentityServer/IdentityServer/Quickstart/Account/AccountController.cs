@@ -85,7 +85,7 @@ namespace IdentityServerHost.Quickstart.UI
             var callback = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.Email }, Request.Scheme);
 
             var message = new Message(new string[] { user.Email }, "Reset password token", callback);
-            _emailSender.SendEmail(message);
+            await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
 
@@ -119,7 +119,10 @@ namespace IdentityServerHost.Quickstart.UI
                
             var user = await _userManager.FindByEmailAsync(resetPasswordModel.Email);
             if (user == null)
+            {
                 RedirectToAction(nameof(ResetPasswordConfirmation));
+            }
+               
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
 
             if (!resetPassResult.Succeeded)
