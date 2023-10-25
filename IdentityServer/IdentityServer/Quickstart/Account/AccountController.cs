@@ -23,6 +23,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -85,8 +86,9 @@ namespace IdentityServerHost.Quickstart.UI
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callback = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.Email }, Request.Scheme);
+            var content = $"Please reset your password by clicking <a href='{callback}'>here</a>";
 
-            var message = new Message(new string[] { user.Email }, "Reset password token", callback);
+            var message = new Message(new string[] { user.Email }, "Reset password token", content);
             await _emailSender.SendEmailAsync(message);
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
@@ -357,8 +359,18 @@ namespace IdentityServerHost.Quickstart.UI
 
                 return View(userModel);
             }
-            
-            result = await _userManager.AddClaimsAsync(
+
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action(
+                "ConfirmEmail",
+                "Account",
+                new { userId = user.Id, code = code },
+                protocol: HttpContext.Request.Scheme);
+            var content = $"Confirm registration by clicking the <a href='{callbackUrl}'>link</a>";
+            Message message = new Message(new string[] { userModel.Email }, "Confirm your account", content);
+            await _emailSender.SendEmailAsync(message);
+
+            await _userManager.AddClaimsAsync(
                     user,
                     new Claim[]
                     {
@@ -376,6 +388,25 @@ namespace IdentityServerHost.Quickstart.UI
             return Redirect("/diagnostics");
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+                return RedirectToAction("Index", "Home");
+            else
+                return View("Error");
+        }
 
         /*****************************************/
         /* helper APIs for the AccountController */
