@@ -1,4 +1,5 @@
-﻿using IdentityModel;
+﻿using Bogus;
+using IdentityModel;
 using IdentityServer.Data;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
@@ -27,7 +28,7 @@ namespace IdentityServer
                 var clientsExist = await configurationDbContext.Clients.AnyAsync();
                 if (!clientsExist)
                 {
-                   await EnsureSeedConfigDataAsync(configurationDbContext);
+                    await EnsureSeedConfigDataAsync(configurationDbContext);
                 }
 
                 var aspNetCoreIdentityDbContext = scope.ServiceProvider.GetRequiredService<AspNetCoreIdentityDbContext>();
@@ -42,35 +43,44 @@ namespace IdentityServer
             {
                 var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-                var angella = await userMgr.FindByNameAsync("angella");
-                if (angella == null)
+                var countUsers = userMgr.Users.Count();
+
+                if (countUsers == 0)
                 {
-                    angella = new IdentityUser
-                    {
-                        UserName = "angella",
-                        Email = "angella.freeman@email.com",
-                        EmailConfirmed = true
-                    };
-                    var result = await userMgr.CreateAsync(angella, "Pass123$");
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception(result.Errors.First().Description);
-                    }
+                    List<string> userNames = new();
+                    for (int i = 0; i < 10; i++)
+                        userNames.Add(new Faker().Internet.UserName());
 
-                    result = await userMgr.AddClaimsAsync(
-                            angella,
-                            new Claim[]
+                    foreach (var username in userNames)
+                    {
+                        var user = await userMgr.FindByNameAsync(username);
+                        if (user == null)
+                        {
+                            user = new Faker<IdentityUser>()
+                                .RuleFor(u => u.UserName, username)
+                                .RuleFor(u => u.Email, f => f.Internet.Email(username))
+                                .RuleFor(u => u.EmailConfirmed, true).Generate();
+
+                            var result = await userMgr.CreateAsync(user, "Pass123$");
+
+                            if (!result.Succeeded)
                             {
-                            new Claim(JwtClaimTypes.Name, "Angella Freeman"),
-                            new Claim(JwtClaimTypes.GivenName, "Angella"),
-                            new Claim(JwtClaimTypes.FamilyName, "Freeman"),
-                            new Claim(JwtClaimTypes.WebSite, "http://angellafreeman.com"),
-                            new Claim("location", "somewhere")
-                            });
+                                throw new Exception(result.Errors.First().Description);
+                            }
 
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception(result.Errors.First().Description);
+                            result = await userMgr.AddClaimsAsync(
+                                    user,
+                                    new Claim[]
+                                    {
+                                    new Claim(JwtClaimTypes.GivenName, new Faker().Name.FirstName()),
+                                    new Claim(JwtClaimTypes.FamilyName, new Faker().Name.LastName())
+                                    });
+
+                            if (!result.Succeeded)
+                            {
+                                throw new Exception(result.Errors.First().Description);
+                            }
+                        }
                     }
                 }
             }

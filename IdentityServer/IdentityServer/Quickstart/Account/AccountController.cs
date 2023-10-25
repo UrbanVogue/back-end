@@ -3,6 +3,7 @@
 
 
 using IdentityModel;
+using IdentityServer.Models;
 using IdentityServer4;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -15,8 +16,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -35,19 +38,22 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager)
         {
             _interaction = interaction;
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -234,6 +240,63 @@ namespace IdentityServerHost.Quickstart.UI
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(UserRegistrationModel userModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(userModel);
+            }
+
+            var user = new IdentityUser 
+            { 
+                UserName = userModel.Email.Split("@")[0],
+                Email = userModel.Email,
+                EmailConfirmed = true
+            };       
+
+            var result = await _userManager.CreateAsync(user, userModel.Password);
+            
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.TryAddModelError(error.Code, error.Description);
+                }
+
+                return View(userModel);
+            }
+            
+            result = await _userManager.AddClaimsAsync(
+                    user,
+                    new Claim[]
+                    {
+                            new Claim(JwtClaimTypes.GivenName, userModel.FirstName),
+                            new Claim(JwtClaimTypes.FamilyName, userModel.LastName),
+                    });
+
+            var isuser = new IdentityServerUser(user.Id)
+            {
+                DisplayName = user.UserName
+            };
+
+            await HttpContext.SignInAsync(isuser);
+
+            return Redirect("/diagnostics");
+
+            //await _userManager.AddToRoleAsync(user, "Visitor");
+
+            //return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
 
