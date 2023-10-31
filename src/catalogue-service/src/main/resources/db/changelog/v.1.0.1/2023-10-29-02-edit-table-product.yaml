@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-10-29-02-edit-table-product
+      author: ikew_trip
+      changes:
+        - addColumn:
+            tableName: product
+            columns:
+              - column:
+                  name: base_price
+                  type: decimal(19, 2)
+              - column:
+                  name: discount_price
+                  type: decimal(19, 2)
+              - column:
+                  name: rating
+                  type: float
+        - addForeignKeyConstraint:
+            baseTableName: image
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
+            constraintName: FK_product_image

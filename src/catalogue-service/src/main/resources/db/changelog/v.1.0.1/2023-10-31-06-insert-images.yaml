@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-10-31-05-insert-images
+      author: ikew_trip
+      changes:
+        - sqlFile:
+            path: sql/2023-10-31-insert-images.sql
+            relativeToChangelogFile: true
