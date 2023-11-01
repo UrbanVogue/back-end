@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-10-29-01-create-table-image
+      author: ikew_trip
+      changes:
+        - createTable:
+            tableName: image
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: type
+                  type: varchar(255)
+              - column:
+                  name: is_for_catalogue
+                  type: boolean
+              - column:
+                  name: data
+                  type: blob
+              - column:
+                  name: product_id
+                  type: bigint

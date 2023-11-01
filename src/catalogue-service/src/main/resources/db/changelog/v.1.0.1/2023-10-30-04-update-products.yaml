@@ -1,0 +1,85 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-10-30-04-update-products
+      author: ikew_trip
+      changes:
+        - update:
+            tableName: product
+            columns:
+              - column:
+                  name: name
+                  value: "Pants"
+              - column:
+                  name: base_price
+                  value: "700"
+              - column:
+                  name: discount_price
+                  value: "500"
+              - column:
+                  name: rating
+                  value: "0"
+            where: id = 1
+        - update:
+            tableName: product
+            columns:
+              - column:
+                  name: name
+                  value: "Shirt"
+              - column:
+                  name: base_price
+                  value: "599"
+              - column:
+                  name: discount_price
+                  value: "500"
+              - column:
+                  name: rating
+                  value: "0"
+            where: id = 2
+        - update:
+            tableName: product
+            columns:
+              - column:
+                  name: name
+                  value: "Shoes"
+              - column:
+                  name: base_price
+                  value: "499"
+              - column:
+                  name: discount_price
+                  value: "400"
+              - column:
+                  name: rating
+                  value: "0"
+            where: id = 3
+        - update:
+            tableName: product
+            columns:
+              - column:
+                  name: name
+                  value: "Socks"
+              - column:
+                  name: base_price
+                  value: "59"
+              - column:
+                  name: discount_price
+                  value: "50"
+              - column:
+                  name: rating
+                  value: "0"
+            where: id = 4
+        - update:
+            tableName: product
+            columns:
+              - column:
+                  name: name
+                  value: "Hat"
+              - column:
+                  name: base_price
+                  value: "119"
+              - column:
+                  name: discount_price
+                  value: "100"
+              - column:
+                  name: rating
+                  value: "0"
+            where: id = 5

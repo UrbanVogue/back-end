@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - include:
+      file: 2023-10-29-01-create-table-image.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-10-29-02-edit-table-product.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-10-30-03-edit-rating-column.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-10-30-04-update-products.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-10-31-05-change-type-data-column-image-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-10-31-06-insert-images.yaml
+      relativeToChangelogFile: true

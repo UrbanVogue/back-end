@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-10-30-03-edit-rating-column
+      author: ikew_trip
+      changes:
+        - addDefaultValue:
+            columnName: rating
+            defaultValue: 0.0
+            tableName: product
