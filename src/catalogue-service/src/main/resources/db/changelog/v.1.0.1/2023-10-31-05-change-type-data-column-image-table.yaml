@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-10-31-05-image-table-data-column-change-type
+      author: ikew_trip
+      changes:
+        - modifyDataType:
+            columnName: data
+            newDataType: text
+            tableName: image
+        - modifyDataType:
+            columnName: data
+            newDataType: bytea
+            tableName: image

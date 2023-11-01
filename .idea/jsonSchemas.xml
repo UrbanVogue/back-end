@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="Liquibase Changelog">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Liquibase Changelog" />
+              <option name="relativePathToSchema" value="jar://$APPLICATION_HOME_DIR$/plugins/javaee-persistence-impl/lib/javaee-persistence-impl.jar!/com/intellij/persistence/liquibase/liquibase-schema.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="src/catalogue-service/src/main/resources/db/changelog/v.1.0.1/2023-10-29-02-edit-table-product.yaml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>

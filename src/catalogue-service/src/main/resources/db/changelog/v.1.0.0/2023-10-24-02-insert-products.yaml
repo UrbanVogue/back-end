@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-10-24-02-insert-products
+      author: ikew_trip
+      changes:
+        - insert:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: name
+                  value: "Product 1"
+        - insert:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: name
+                  value: "Product 2"
+        - insert:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: name
+                  value: "Product 3"
+        - insert:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  value: 4
+              - column:
+                  name: name
+                  value: "Product 4"
+        - insert:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  value: 5
+              - column:
+                  name: name
+                  value: "Product 5"
