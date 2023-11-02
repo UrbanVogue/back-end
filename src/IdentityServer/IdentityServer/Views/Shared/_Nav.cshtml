@@ -23,11 +23,22 @@
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
                     
                     <div class="dropdown-menu">
+                        <form asp-controller="Account" asp-action="ChangePassword" method="get" class="dropdown-item">
+                            <input type="hidden" name="username" value="@name" />
+                            <button>Change Password</button>
+                        </form>
                         <a class="dropdown-item" asp-action="Logout" asp-controller="Account">Logout</a>
                     </div>
               </li>
             </ul>
+            @*<form asp-controller="Account" asp-action="ChangePassword" method="get">
+                <input type="hidden" name="username" value="@name" />
+                <div class="form-group">
+                    <input type="submit" value="Change Password" class="btn btn-primary" />
+                </div>
+            </form>*@
         }
-    
+        
+        
     </nav>
 </div>
