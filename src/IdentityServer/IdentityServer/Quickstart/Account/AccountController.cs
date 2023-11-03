@@ -73,13 +73,13 @@ namespace IdentityServerHost.Quickstart.UI
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if(user is null)
+            if (user is null)
             {
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
@@ -120,13 +120,13 @@ namespace IdentityServerHost.Quickstart.UI
             {
                 return View(resetPasswordModel);
             }
-               
+
             var user = await _userManager.FindByEmailAsync(resetPasswordModel.Email);
             if (user == null)
             {
                 RedirectToAction(nameof(ResetPasswordConfirmation));
             }
-               
+
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
 
             if (!resetPassResult.Succeeded)
@@ -385,7 +385,7 @@ namespace IdentityServerHost.Quickstart.UI
 
             var user = new IdentityUser 
             { 
-                UserName = userModel.Email/*.Split("@")[0]*/,
+                UserName = userModel.Email,
                 Email = userModel.Email,
             };       
 
