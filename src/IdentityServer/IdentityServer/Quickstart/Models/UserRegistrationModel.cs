@@ -5,7 +5,9 @@ namespace IdentityServer.Models
 {
     public class UserRegistrationModel
     {
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]

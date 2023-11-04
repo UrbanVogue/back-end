@@ -2,12 +2,11 @@
 
 <h1>Register</h1>
 
-<h4>UserRegistrationModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Register">
-            <div asp-validation-summary="All" class="text-danger"></div>
+            <partial name="_ValidationSummary" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
