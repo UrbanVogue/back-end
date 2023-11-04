@@ -50,7 +50,7 @@ namespace IdentityServer
                 {
                     List<string> userNames = new();
                     for (int i = 0; i < 10; i++)
-                        userNames.Add(new Faker().Internet.UserName());
+                        userNames.Add(new Faker().Internet.Email());
 
                     foreach (var username in userNames)
                     {
@@ -59,7 +59,7 @@ namespace IdentityServer
                         {
                             user = new Faker<IdentityUser>()
                                 .RuleFor(u => u.UserName, username)
-                                .RuleFor(u => u.Email, f => f.Internet.Email(username))
+                                .RuleFor(u => u.Email, username)
                                 .RuleFor(u => u.EmailConfirmed, true).Generate();
 
                             var result = await userMgr.CreateAsync(user, "Pass123$");

@@ -73,13 +73,13 @@ namespace IdentityServerHost.Quickstart.UI
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if(user is null)
+            if (user is null)
             {
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
@@ -120,13 +120,13 @@ namespace IdentityServerHost.Quickstart.UI
             {
                 return View(resetPasswordModel);
             }
-               
+
             var user = await _userManager.FindByEmailAsync(resetPasswordModel.Email);
             if (user == null)
             {
                 RedirectToAction(nameof(ResetPasswordConfirmation));
             }
-               
+
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
 
             if (!resetPassResult.Succeeded)
@@ -138,6 +138,48 @@ namespace IdentityServerHost.Quickstart.UI
                 return View();
             }
             return RedirectToAction(nameof(ResetPasswordConfirmation));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            ChangePasswordModel model = new ChangePasswordModel { Username = user.UserName };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null)
+                {
+                    IdentityResult result =
+                        await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        return Redirect("/diagnostics");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "User isn't found");
+                }
+            }
+            return View(model);
         }
 
         /// <summary>
@@ -343,7 +385,7 @@ namespace IdentityServerHost.Quickstart.UI
 
             var user = new IdentityUser 
             { 
-                UserName = userModel.Email.Split("@")[0],
+                UserName = userModel.Email,
                 Email = userModel.Email,
             };       
 
