@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+
+  api.geteway:
+    build:
+      context: ./api-gateway/ApiGateway
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+    ports:
+      - 5003:80
+
+
+  catalogue.service:
+    image: ${DOCKER_REGISTRY-}catalogue-service
+    build:
+      context: ./catalogue-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8181:80"
+    depends_on:
+      catalogue.db:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT= 80
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://catalogue-db/catalogue
+
+
+  catalogue.db:
+    image: postgres:14.7-alpine
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "books_db" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./catalogue-service/infrastructure/db/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
+      - catalogue_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+
+
+  identity.server:
+    image: ${DOCKER_REGISTRY-}identity-server 
+    build:
+      context: ./IdentityServer/.
+      dockerfile: ./IdentityServer/Dockerfile
+    restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=identityserver.db;Database=IdentityServer4;User Id=sa;Password=Your_Strong_Password;TrustServerCertificate=True;" 
+      EmailConfiguration__From: "giovanna17@ethereal.email"
+      EmailConfiguration__SmtpServer: "smtp.ethereal.email"
+      EmailConfiguration__Port: 587
+      EmailConfiguration__Username: "giovanna17@ethereal.email"
+      EmailConfiguration__Password: "BC2X7PhgjedC3uAAJX"
+    ports:
+      - "8010:80"
+    depends_on:
+      - identityserver.db
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/C/Users/ContainerUser/AppData/Roaming/Microsoft/UserSecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/C/Users/ContainerUser/AppData/Roaming/ASP.NET/Https:ro
+    
+   
+  identityserver.db:   
+    environment:
+        SA_PASSWORD: "Your_Strong_Password"
+        ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+        - "1433:1433"
+    volumes:
+      - identity_server_db:/var/opt/mssql
+
+
+  pgadmin:
+    container_name: catalogue-pgadmin
+    image: dpage/pgadmin4:7
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    volumes:
+      - catalogue_pgadmin_data:/var/lib/pgadmin
+
+
+  portainer:
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+volumes:
+  catalogue_db_data:
+  catalogue_pgadmin_data:
+  identity_server_db:
+  portainer_data:
