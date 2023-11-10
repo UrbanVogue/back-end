@@ -24,7 +24,7 @@ services:
     image: ${DOCKER_REGISTRY-}identity-server    
 
 
-  identityserver.db:
+  identity-server.db:
     container_name: identity-server-db
     image: mcr.microsoft.com/mssql/server:2019-latest
 
@@ -37,43 +37,19 @@ services:
     image: portainer/portainer-ce
 
 
-  basket-service:
-    build:
-      dockerfile: Dockerfile
-      context: ./basket-service
-      target: production
-    depends_on:
-      redis:
-        condition: service_healthy
-    environment:
-      - SERVER_PORT=7777
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=password
-    ports:
-      - "7777:7777"
+  basket.service:
+    container_name: basket-service
+    image: ${DOCKER_REGISTRY-}basket-service
 
-  redis:
-    restart: always
+
+  basket.cache:
+    container_name: basket-cache-redis    
     image: redis:alpine
-    environment:
-      - REDIS_ARGS=--requirepass password --save 20 1 --appendonly yes
-    ports:
-      - 6379:6379
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-    volumes:
-      - redis:/var/lib/redis/data
-    
   
 volumes:
-  catalogue-db-data:
-  catalogue-pgadmin-data:
-  redis:
+  catalogue_db_data:
+  basket_cache_data:
   identity_server_db:
-  catalogue-pgadmin-data:
+  catalogue_pgadmin_data:
   portainer_data:
 

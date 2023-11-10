@@ -10,7 +10,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     restart: always
     ports:
-      - 5003:80
+      - "5003:80"
 
 
   catalogue.service:
@@ -46,7 +46,6 @@ services:
     restart: unless-stopped
 
 
-
   identity.server:
     image: ${DOCKER_REGISTRY-}identity-server 
     build:
@@ -55,7 +54,7 @@ services:
     restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Server=identityserver.db;Database=IdentityServer4;User Id=sa;Password=Your_Strong_Password;TrustServerCertificate=True;" 
+      ConnectionStrings__DefaultConnection: "Server=identity-server.db;Database=IdentityServer4;User Id=sa;Password=Your_Strong_Password;TrustServerCertificate=True;" 
       EmailConfiguration__From: "giovanna17@ethereal.email"
       EmailConfiguration__SmtpServer: "smtp.ethereal.email"
       EmailConfiguration__Port: 587
@@ -64,13 +63,12 @@ services:
     ports:
       - "8010:80"
     depends_on:
-      - identityserver.db
+      - identity-server.db
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/C/Users/ContainerUser/AppData/Roaming/Microsoft/UserSecrets:ro
       - ${APPDATA}/ASP.NET/Https:/C/Users/ContainerUser/AppData/Roaming/ASP.NET/Https:ro
-    
-   
-  identityserver.db:   
+       
+  identity-server.db:   
     environment:
         SA_PASSWORD: "Your_Strong_Password"
         ACCEPT_EULA: "Y"
@@ -80,6 +78,37 @@ services:
     volumes:
       - identity_server_db:/var/opt/mssql
 
+  basket.service:
+    image: ${DOCKER_REGISTRY-}basket-service
+    build:
+      dockerfile: Dockerfile
+      context: ./basket-service
+      target: production
+    depends_on:
+      basket.cache:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=7777
+      - REDIS_HOST=basket.cache
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
+    ports:
+      - "7777:7777"
+
+  basket.cache:
+    image: redis:alpine
+    environment:
+      - REDIS_ARGS=--requirepass password --save 20 1 --appendonly yes
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - basket_cache_data:/var/lib/redis/data
 
   pgadmin:
     container_name: catalogue-pgadmin
@@ -105,6 +134,7 @@ services:
 
 volumes:
   catalogue_db_data:
-  catalogue_pgadmin_data:
+  basket_cache_data:
   identity_server_db:
+  catalogue_pgadmin_data:
   portainer_data:
