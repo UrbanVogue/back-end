@@ -31,7 +31,14 @@ public class Product {
     @Column(name = "rating")
     private Float rating;
 
+    @Column(name = "description")
+    private String description;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private List<Image> images;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private List<ProductItem> productItems;
 }
