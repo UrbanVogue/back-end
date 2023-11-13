@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityServer4;
+using IdentityServer4.Models;
 
 namespace IdentityServer.Configurations
 {
@@ -37,6 +38,24 @@ namespace IdentityServer.Configurations
                      RequireConsent = true,
                      AllowPlainTextPkce = false
                    },
+                    new Client
+                    {
+                        ClientId = "Angular-Client",
+                        ClientName = "angular-client",
+                        RedirectUris = new List<string>{ "http://localhost:4200/signin-callback", "http://localhost:4200/assets/silent-callback.html" },
+                        AllowedGrantTypes = GrantTypes.Code,
+                        RequireClientSecret = false,
+                        RequirePkce = true,
+                        AllowAccessTokensViaBrowser = true,
+                        AllowedScopes = {
+                            IdentityServerConstants.StandardScopes.OpenId,
+                            IdentityServerConstants.StandardScopes.Profile,
+                            
+                        },
+                        AllowedCorsOrigins = { "http://localhost:4200" },
+                        PostLogoutRedirectUris = new List<string> { "http://localhost:4200/signout-callback" },
+                        AccessTokenLifetime = 600,
+                    }         
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>

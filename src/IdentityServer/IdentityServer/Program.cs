@@ -50,6 +50,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors(policyBuilder =>
+{
+    policyBuilder.AllowAnyOrigin();
+    policyBuilder.AllowAnyMethod();
+    policyBuilder.AllowAnyHeader();
+});
+
 app.UseIdentityServer();
 
 app.UseAuthorization();
