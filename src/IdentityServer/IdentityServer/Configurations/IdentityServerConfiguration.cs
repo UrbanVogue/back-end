@@ -42,18 +42,18 @@ namespace IdentityServer.Configurations
                     {
                         ClientId = "Angular-Client",
                         ClientName = "angular-client",
-                        RedirectUris = new List<string>{ "http://localhost:4200/signin-callback", "http://localhost:4200/assets/silent-callback.html" },
                         AllowedGrantTypes = GrantTypes.Code,
-                        RequireClientSecret = false,
+                        RedirectUris = new List<string>{ "http://localhost:4200/signin-callback", "http://localhost:4200/assets/silent-callback.html" },
                         RequirePkce = true,
                         AllowAccessTokensViaBrowser = true,
                         AllowedScopes = {
                             IdentityServerConstants.StandardScopes.OpenId,
                             IdentityServerConstants.StandardScopes.Profile,
-                            
                         },
                         AllowedCorsOrigins = { "http://localhost:4200" },
+                        RequireClientSecret = false,
                         PostLogoutRedirectUris = new List<string> { "http://localhost:4200/signout-callback" },
+                        RequireConsent = false,
                         AccessTokenLifetime = 600,
                     }         
             };
