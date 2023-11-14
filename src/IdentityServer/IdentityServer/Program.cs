@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using IdentityServer.Data;
 using IdentityServer.Configurations;
 using EmailService;
+using IdentityServer.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLogging();
@@ -15,6 +16,11 @@ var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<Ema
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddScoped<IMailSender, MailSender>();
 
+builder.Services.AddSingleton<IIdentityServerConfiguration, IdentityServerConfiguration>();
+builder.Services.AddSingleton<ISeeder, Seeder>();
+
+var mobileConfig = builder.Configuration.GetSection(nameof(MobileClientConfiguration)).Get<MobileClientConfiguration>();
+builder.Services.AddSingleton(mobileConfig);
 
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -75,7 +81,8 @@ app.UseEndpoints(endpoints =>
 
 using (var scope = app.Services.CreateScope())
 {
-        await SeedData.EnsureSeedDataAsync(scope.ServiceProvider);
+    var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
+        await seeder.EnsureSeedDataAsync(scope.ServiceProvider);
 }
 
 app.Run();

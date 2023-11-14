@@ -1,16 +1,18 @@
-﻿using IdentityServer4;
+using IdentityServer4;
 using IdentityServer4.Models;
 
 namespace IdentityServer.Configurations
 {
-    public class IdentityServerConfiguration
+    public class IdentityServerConfiguration : IIdentityServerConfiguration
     {
-        public IdentityServerConfiguration()
-        {
-          
-        }
+        private readonly MobileClientConfiguration _mobileClientConfiguration;
         
-        public static IEnumerable<Client> Clients =>
+        public IdentityServerConfiguration(MobileClientConfiguration mobileClientConfiguration)
+        {
+            _mobileClientConfiguration = mobileClientConfiguration;
+        }
+
+        public IEnumerable<Client> GetClients() =>
             new Client[]
             {
                    new()
@@ -48,17 +50,18 @@ namespace IdentityServer.Configurations
                        ClientName = "maui-client",
                        AllowedGrantTypes = GrantTypes.Code,
                       
-                       RedirectUris = new List<string>{ "https://oauth.pstmn.io/v1/callback" },
+                       RedirectUris = _mobileClientConfiguration.RedirectUris,
                        RequireConsent = false,
                        RequirePkce = true,
-                       RequireClientSecret = false,
-                       PostLogoutRedirectUris = new List<string> { "http://localhost:4200/signout-callback" },
-                       //AllowedCorsOrigins = { "http://localhost:4200" },
+                       RequireClientSecret = true,
+                       PostLogoutRedirectUris = _mobileClientConfiguration.PostLogoutRedirectUris,
+                       AllowedCorsOrigins = _mobileClientConfiguration.AllowedCorsOrigins,
                        AllowedScopes = new List<string>
                        {
                            IdentityServerConstants.StandardScopes.OpenId,
                            IdentityServerConstants.StandardScopes.Profile,
                        },
+                       ClientSecrets = _mobileClientConfiguration.ClientSecrets.Select(secret => new Secret {Value = secret}).ToList(),
                        AllowAccessTokensViaBrowser = true
                    },
                    new()
@@ -74,14 +77,14 @@ namespace IdentityServer.Configurations
                    },
             };
 
-        public static IEnumerable<ApiScope> ApiScopes =>
+        public IEnumerable<ApiScope> GetApiScopes() =>
            new ApiScope[]
            {
                new("CatalogAPI.read"),
                new("CatalogAPI.write")
            };
 
-        public static IEnumerable<ApiResource> ApiResources =>
+        public IEnumerable<ApiResource> GetApiResources() =>
           new ApiResource[]
           {
                new("CatalogAPI")
@@ -92,7 +95,7 @@ namespace IdentityServer.Configurations
                }
           };
 
-        public static IEnumerable<IdentityResource> IdentityResources =>
+        public IEnumerable<IdentityResource> GetIdentityResources() =>
           new IdentityResource[]
           {
               new IdentityResources.OpenId(),

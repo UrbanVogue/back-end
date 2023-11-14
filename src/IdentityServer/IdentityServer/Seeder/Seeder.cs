@@ -1,18 +1,25 @@
-﻿using Bogus;
+﻿using System.Security.Claims;
+using Bogus;
 using IdentityModel;
 using IdentityServer.Configurations;
 using IdentityServer.Data;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using IdentityServer4.EntityFramework.Mappers;
 
-namespace IdentityServer
+namespace IdentityServer.Seeder
 {
-    public class SeedData
+    public class Seeder : ISeeder
     {
-        public static async Task EnsureSeedDataAsync(IServiceProvider serviceProvider)
+        private readonly IIdentityServerConfiguration _identityServerConfiguration;
+
+        public Seeder(IIdentityServerConfiguration identityServerConfiguration)
+        {
+            _identityServerConfiguration = identityServerConfiguration;
+        }
+
+        public async Task EnsureSeedDataAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
@@ -81,12 +88,12 @@ namespace IdentityServer
             }
         }
 
-        private static async Task EnsureSeedConfigDataAsync(ConfigurationDbContext context)
+        private async Task EnsureSeedConfigDataAsync(ConfigurationDbContext context)
         {
             var clientsIsExists = await context.Clients.AnyAsync();
             if (!clientsIsExists)
             {
-                var clients = IdentityServerConfiguration.Clients
+                var clients = _identityServerConfiguration.GetClients()
                     .ToList()
                     .Select(client => client.ToEntity());
                 
@@ -100,11 +107,11 @@ namespace IdentityServer
 
             if (!(await context.IdentityResources.AnyAsync()))
             {
-                var resources = IdentityServerConfiguration.IdentityResources
+                var identityResources = _identityServerConfiguration.GetIdentityResources()
                     .ToList()
                     .Select(resource => resource.ToEntity());
                 
-                foreach (var entity in resources)
+                foreach (var entity in identityResources)
                 {
                     await context.IdentityResources.AddAsync(entity);
                 }
@@ -114,7 +121,7 @@ namespace IdentityServer
 
             if (!await context.ApiScopes.AnyAsync())
             {
-                var apiScopes = IdentityServerConfiguration.ApiScopes
+                var apiScopes = _identityServerConfiguration.GetApiScopes()
                     .ToList()
                     .Select(resource => resource.ToEntity());
                 
@@ -128,7 +135,7 @@ namespace IdentityServer
 
             if (!(await context.ApiResources.AnyAsync()))
             {
-                var apiResources = IdentityServerConfiguration.ApiResources
+                var apiResources = _identityServerConfiguration.GetApiResources()
                     .ToList()
                     .Select(resource => resource.ToEntity());
                 
