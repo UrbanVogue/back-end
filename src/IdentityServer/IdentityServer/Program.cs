@@ -17,7 +17,7 @@ builder.Services.AddScoped<IMailSender, MailSender>();
 
 
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AspNetCoreIdentityDbContext>(options => options.UseSqlServer(connectionString));
 
@@ -43,6 +43,13 @@ builder.Services.AddIdentityServer()
         options.EnableTokenCleanup = true;
     })
     .AddDeveloperSigningCredential();
+
+builder.Services.ConfigureApplicationCookie(config =>
+{
+    config.Cookie.Name = "IdentityServer.Cookie";
+    config.Cookie.SameSite = SameSiteMode.None;
+    config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 var app = builder.Build();
 

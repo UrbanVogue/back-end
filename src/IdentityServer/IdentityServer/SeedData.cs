@@ -83,7 +83,8 @@ namespace IdentityServer
 
         private static async Task EnsureSeedConfigDataAsync(ConfigurationDbContext context)
         {
-            if (!(await context.Clients.AnyAsync()))
+            var clientsIsExists = await context.Clients.AnyAsync();
+            if (!clientsIsExists)
             {
                 var clients = IdentityServerConfiguration.Clients
                     .ToList()

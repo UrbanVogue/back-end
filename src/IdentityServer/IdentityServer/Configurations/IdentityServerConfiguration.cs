@@ -5,41 +5,27 @@ namespace IdentityServer.Configurations
 {
     public class IdentityServerConfiguration
     {
+        public IdentityServerConfiguration()
+        {
+          
+        }
+        
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
-                   new Client
+                   new()
                    {
                         ClientId = "СatalogClient",
                         ClientName = "Сatalog Credentials Client",
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
                         ClientSecrets =
                         {
-                            new Secret("ClientSecret1")
+                            new Secret { Value = "ClientSecret1".Sha256()}
                         },
                         AllowedScopes = { "CatalogAPI.read", "CatalogAPI.write" }
                    },
-
-                   // interactive client using code flow + pkce
-                   new Client
+                   new()
                    {
-                     ClientId = "interactive",
-                     ClientSecrets = {new Secret("ClientSecret1")},
-
-                     AllowedGrantTypes = GrantTypes.Code,
-
-                     RedirectUris = {"https://localhost:7059/signin-oidc"},
-                     FrontChannelLogoutUri = "https://localhost:7059/signout-oidc",
-                     PostLogoutRedirectUris = {"https://localhost:7059/signout-callback-oidc"},
-
-                     AllowOfflineAccess = true,
-                     AllowedScopes = {"openid", "profile", "CatalogAPI.read"},
-                     RequirePkce = true,
-                     RequireConsent = true,
-                     AllowPlainTextPkce = false
-                   },
-                    new Client
-                    {
                         ClientId = "Angular-Client",
                         ClientName = "angular-client",
                         AllowedGrantTypes = GrantTypes.Code,
@@ -55,23 +41,53 @@ namespace IdentityServer.Configurations
                         PostLogoutRedirectUris = new List<string> { "http://localhost:4200/signout-callback" },
                         RequireConsent = false,
                         AccessTokenLifetime = 600,
-                    }         
+                    },
+                   new()
+                   {
+                       ClientId = "Maui-Client",
+                       ClientName = "maui-client",
+                       AllowedGrantTypes = GrantTypes.Code,
+                      
+                       RedirectUris = new List<string>{ "https://oauth.pstmn.io/v1/callback" },
+                       RequireConsent = false,
+                       RequirePkce = true,
+                       RequireClientSecret = false,
+                       PostLogoutRedirectUris = new List<string> { "http://localhost:4200/signout-callback" },
+                       //AllowedCorsOrigins = { "http://localhost:4200" },
+                       AllowedScopes = new List<string>
+                       {
+                           IdentityServerConstants.StandardScopes.OpenId,
+                           IdentityServerConstants.StandardScopes.Profile,
+                       },
+                       AllowAccessTokensViaBrowser = true
+                   },
+                   new()
+                   {
+                       ClientId = "Maui-Client-Credentials",
+                       ClientName = "maui-client Credentials",
+                       AllowedGrantTypes = GrantTypes.ClientCredentials,
+                       ClientSecrets =
+                       {
+                           new Secret { Value = "ClientSecret1".Sha256()}
+                       },
+                       AllowedScopes = { "CatalogAPI.read", "CatalogAPI.write" }
+                   },
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
            new ApiScope[]
            {
-               new ApiScope("CatalogAPI.read"),
-               new ApiScope("CatalogAPI.write")
+               new("CatalogAPI.read"),
+               new("CatalogAPI.write")
            };
 
         public static IEnumerable<ApiResource> ApiResources =>
           new ApiResource[]
           {
-               new ApiResource("CatalogAPI")
+               new("CatalogAPI")
                {
                    Scopes = new string[] { "CatalogAPI.read" , "CatalogAPI.write" },
-                   ApiSecrets = new Secret[] {new Secret("ScopeSecret".Sha256())},
+                   ApiSecrets = new Secret[] {new("ScopeSecret".Sha256())},
                    UserClaims = new string[] { "role"}
                }
           };
@@ -82,7 +98,7 @@ namespace IdentityServer.Configurations
               new IdentityResources.OpenId(),
               new IdentityResources.Profile(),
               new IdentityResources.Email(),
-              new IdentityResource
+              new()
               {
                   Name = "role",
                   UserClaims = new string[] {"role"}
