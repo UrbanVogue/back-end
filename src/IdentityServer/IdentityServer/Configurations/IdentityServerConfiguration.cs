@@ -17,7 +17,7 @@ namespace IdentityServer.Configurations
             {
                    new()
                    {
-                        ClientId = "СatalogClient",
+                        ClientId = "Сatalog-Client",
                         ClientName = "Сatalog Credentials Client",
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
                         ClientSecrets =
