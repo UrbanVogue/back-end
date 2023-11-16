@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using IdentityServer.Data;
 using IdentityServer.Configurations;
 using EmailService;
+using IdentityServer.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLogging();
@@ -15,9 +16,14 @@ var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<Ema
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddScoped<IMailSender, MailSender>();
 
+builder.Services.AddSingleton<IIdentityServerConfiguration, IdentityServerConfiguration>();
+builder.Services.AddSingleton<ISeeder, Seeder>();
+
+var mobileConfig = builder.Configuration.GetSection(nameof(MobileClientConfiguration)).Get<MobileClientConfiguration>();
+builder.Services.AddSingleton(mobileConfig);
 
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AspNetCoreIdentityDbContext>(options => options.UseSqlServer(connectionString));
 
@@ -44,11 +50,25 @@ builder.Services.AddIdentityServer()
     })
     .AddDeveloperSigningCredential();
 
+builder.Services.ConfigureApplicationCookie(config =>
+{
+    config.Cookie.Name = "IdentityServer.Cookie";
+    config.Cookie.SameSite = SameSiteMode.None;
+    config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 var app = builder.Build();
 
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors(policyBuilder =>
+{
+    policyBuilder.AllowAnyOrigin();
+    policyBuilder.AllowAnyMethod();
+    policyBuilder.AllowAnyHeader();
+});
 
 app.UseIdentityServer();
 
@@ -61,7 +81,8 @@ app.UseEndpoints(endpoints =>
 
 using (var scope = app.Services.CreateScope())
 {
-        await SeedData.EnsureSeedDataAsync(scope.ServiceProvider);
+    var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
+        await seeder.EnsureSeedDataAsync(scope.ServiceProvider);
 }
 
 app.Run();

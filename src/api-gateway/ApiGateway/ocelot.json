@@ -43,6 +43,67 @@
         "Limit": 1
       },
       "FileCacheOptions": { "TtlSeconds": 15 }
+    },
+    //Basket
+    {
+      "UpstreamPathTemplate": "/basket/{username}",
+      "DownstreamPathTemplate": "/api/v1/basket/{username}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "basket.service",
+          "Port": 7777
+        }
+      ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 1,
+        "Limit": 1
+      },
+      "FileCacheOptions": { "TtlSeconds": 15 }
+    },
+    {
+      "UpstreamPathTemplate": "/basket/",
+      "DownstreamPathTemplate": "/api/v1/basket/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "basket.service",
+          "Port": 7777
+        }
+      ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 1,
+        "Limit": 1
+      },
+      "FileCacheOptions": { "TtlSeconds": 15 }
+    },
+    {
+      "UpstreamPathTemplate": "/basket/{username}",
+      "DownstreamPathTemplate": "/api/v1/basket/{username}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "basket.service",
+          "Port": 7777
+        }
+      ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 1,
+        "Limit": 1
+      },
+      "FileCacheOptions": { "TtlSeconds": 15 }
     }
   ]  
 }

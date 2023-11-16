@@ -1,69 +1,107 @@
-﻿using IdentityServer4.Models;
+using IdentityServer4;
+using IdentityServer4.Models;
 
 namespace IdentityServer.Configurations
 {
-    public class IdentityServerConfiguration
+    public class IdentityServerConfiguration : IIdentityServerConfiguration
     {
-        public static IEnumerable<Client> Clients =>
+        private readonly MobileClientConfiguration _mobileClientConfiguration;
+        
+        public IdentityServerConfiguration(MobileClientConfiguration mobileClientConfiguration)
+        {
+            _mobileClientConfiguration = mobileClientConfiguration;
+        }
+
+        public IEnumerable<Client> GetClients() =>
             new Client[]
             {
-                   new Client
+                   new()
                    {
-                        ClientId = "СatalogClient",
+                        ClientId = "Сatalog-Client",
                         ClientName = "Сatalog Credentials Client",
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
                         ClientSecrets =
                         {
-                            new Secret("ClientSecret1")
+                            new Secret { Value = "ClientSecret1".Sha256()}
                         },
                         AllowedScopes = { "CatalogAPI.read", "CatalogAPI.write" }
                    },
-
-                   // interactive client using code flow + pkce
-                   new Client
+                   new()
                    {
-                     ClientId = "interactive",
-                     ClientSecrets = {new Secret("ClientSecret1")},
-
-                     AllowedGrantTypes = GrantTypes.Code,
-
-                     RedirectUris = {"https://localhost:7059/signin-oidc"},
-                     FrontChannelLogoutUri = "https://localhost:7059/signout-oidc",
-                     PostLogoutRedirectUris = {"https://localhost:7059/signout-callback-oidc"},
-
-                     AllowOfflineAccess = true,
-                     AllowedScopes = {"openid", "profile", "CatalogAPI.read"},
-                     RequirePkce = true,
-                     RequireConsent = true,
-                     AllowPlainTextPkce = false
+                        ClientId = "Angular-Client",
+                        ClientName = "angular-client",
+                        AllowedGrantTypes = GrantTypes.Code,
+                        RedirectUris = new List<string>{ "http://localhost:4200" },
+                        RequirePkce = true,
+                        AllowAccessTokensViaBrowser = true,
+                        AllowedScopes = {
+                            IdentityServerConstants.StandardScopes.OpenId,
+                            IdentityServerConstants.StandardScopes.Profile,
+                        },
+                        AllowedCorsOrigins = { "http://localhost:4200" },
+                        RequireClientSecret = false,
+                        PostLogoutRedirectUris = new List<string> { "http://localhost:4200" },
+                        RequireConsent = false,
+                        AccessTokenLifetime = 600,
+                    },
+                   new()
+                   {
+                       ClientId = "Maui-Client",
+                       ClientName = "maui-client",
+                       AllowedGrantTypes = GrantTypes.Code,
+                      
+                       RedirectUris = _mobileClientConfiguration.RedirectUris,
+                       RequireConsent = false,
+                       RequirePkce = true,
+                       RequireClientSecret = true,
+                       PostLogoutRedirectUris = _mobileClientConfiguration.PostLogoutRedirectUris,
+                       AllowedCorsOrigins = _mobileClientConfiguration.AllowedCorsOrigins,
+                       AllowedScopes = new List<string>
+                       {
+                           IdentityServerConstants.StandardScopes.OpenId,
+                           IdentityServerConstants.StandardScopes.Profile,
+                       },
+                       ClientSecrets = _mobileClientConfiguration.ClientSecrets.Select(secret => new Secret {Value = secret}).ToList(),
+                       AllowAccessTokensViaBrowser = true
+                   },
+                   new()
+                   {
+                       ClientId = "Maui-Client-Credentials",
+                       ClientName = "maui-client Credentials",
+                       AllowedGrantTypes = GrantTypes.ClientCredentials,
+                       ClientSecrets =
+                       {
+                           new Secret { Value = "ClientSecret1".Sha256()}
+                       },
+                       AllowedScopes = { "CatalogAPI.read", "CatalogAPI.write" }
                    },
             };
 
-        public static IEnumerable<ApiScope> ApiScopes =>
+        public IEnumerable<ApiScope> GetApiScopes() =>
            new ApiScope[]
            {
-               new ApiScope("CatalogAPI.read"),
-               new ApiScope("CatalogAPI.write")
+               new("CatalogAPI.read"),
+               new("CatalogAPI.write")
            };
 
-        public static IEnumerable<ApiResource> ApiResources =>
+        public IEnumerable<ApiResource> GetApiResources() =>
           new ApiResource[]
           {
-               new ApiResource("CatalogAPI")
+               new("CatalogAPI")
                {
                    Scopes = new string[] { "CatalogAPI.read" , "CatalogAPI.write" },
-                   ApiSecrets = new Secret[] {new Secret("ScopeSecret".Sha256())},
+                   ApiSecrets = new Secret[] {new("ScopeSecret".Sha256())},
                    UserClaims = new string[] { "role"}
                }
           };
 
-        public static IEnumerable<IdentityResource> IdentityResources =>
+        public IEnumerable<IdentityResource> GetIdentityResources() =>
           new IdentityResource[]
           {
               new IdentityResources.OpenId(),
               new IdentityResources.Profile(),
               new IdentityResources.Email(),
-              new IdentityResource
+              new()
               {
                   Name = "role",
                   UserClaims = new string[] {"role"}
