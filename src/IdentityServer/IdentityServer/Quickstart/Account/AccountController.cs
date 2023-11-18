@@ -375,7 +375,6 @@ namespace IdentityServerHost.Quickstart.UI
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(UserRegistrationModel userModel)
         {
             if (!ModelState.IsValid)
@@ -385,6 +384,7 @@ namespace IdentityServerHost.Quickstart.UI
 
             var user = new User() 
             {
+                UserName = userModel.Email,
                 FirstName = userModel.FirstName,
                 LastName = userModel.LastName,
                 Email = userModel.Email,
