@@ -42,17 +42,21 @@ namespace IdentityServer.Seeder
         {
             using var scope = serviceProvider.CreateScope();
             var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             var countUsers = userMgr.Users.Count();
 
             if (countUsers == 0)
             {
-                List<string> userNames = new();
-                for (var i = 0; i < 10; i++)
-                    userNames.Add(new Faker().Internet.Email());
+                List<string> userNames = new() { "User", "Admin"};
 
                 foreach (var username in userNames)
                 {
+                    if (await roleMgr.FindByNameAsync(username) == null)
+                    {
+                        await roleMgr.CreateAsync(new IdentityRole(username));
+                    }
+
                     var user = await userMgr.FindByNameAsync(username);
 
                     if (user != null)
@@ -62,10 +66,17 @@ namespace IdentityServer.Seeder
                     
                     user = new Faker<IdentityUser>()
                         .RuleFor(u => u.UserName, username)
-                        .RuleFor(u => u.Email, username)
+                        .RuleFor(u => u.Email, f => f.Internet.Email())
                         .RuleFor(u => u.EmailConfirmed, true).Generate();
 
                     var result = await userMgr.CreateAsync(user, "Pass123$");
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+
+                    result = await userMgr.AddToRoleAsync(user, username);
 
                     if (!result.Succeeded)
                     {
