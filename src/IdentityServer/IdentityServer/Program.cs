@@ -50,6 +50,7 @@ builder.Services.AddIdentityServer()
         options.EnableTokenCleanup = true;
     })
     .AddDeveloperSigningCredential()
+    .AddAspNetIdentity<IdentityUser>()
     .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<IdentityUser>>();
 
 builder.Services.ConfigureApplicationCookie(config =>

@@ -48,7 +48,7 @@ namespace IdentityServer.Seeder
 
             if (countUsers == 0)
             {
-                List<string> userNames = new() { "User", "Admin"};
+                List<string> userNames = new() { "User", "Admin" };
 
                 foreach (var username in userNames)
                 {
@@ -63,12 +63,11 @@ namespace IdentityServer.Seeder
                     {
                         continue;
                     }
-                    
+
                     user = new Faker<IdentityUser>()
                         .RuleFor(u => u.UserName, username)
                         .RuleFor(u => u.Email, f => f.Internet.Email())
                         .RuleFor(u => u.EmailConfirmed, true).Generate();
-
                     var result = await userMgr.CreateAsync(user, "Pass123$");
 
                     if (!result.Succeeded)
@@ -87,8 +86,9 @@ namespace IdentityServer.Seeder
                         user,
                         new Claim[]
                         {
-                            new Claim(JwtClaimTypes.GivenName, new Faker().Name.FirstName()),
-                            new Claim(JwtClaimTypes.FamilyName, new Faker().Name.LastName())
+                            new Claim(JwtClaimTypes.GivenName, user.UserName),
+                            new Claim(JwtClaimTypes.Name, user.UserName),
+                            new Claim(JwtClaimTypes.Email, user.Email)
                         });
 
                     if (!result.Succeeded)

@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
 
@@ -43,13 +45,15 @@ namespace IdentityServer.Configurations
                         PostLogoutRedirectUris = new List<string> { "http://localhost:4200" },
                         RequireConsent = false,
                         AccessTokenLifetime = 600,
-                    },
+                   },
                    new()
                    {
                        ClientId = "Maui-Client",
                        ClientName = "maui-client",
                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                        AllowOfflineAccess = true,
+                       RefreshTokenUsage = TokenUsage.ReUse,
+                       RefreshTokenExpiration = TokenExpiration.Absolute,
                        ClientSecrets =
                        {
                            new Secret { Value = "ClientSecret1".Sha256()}
