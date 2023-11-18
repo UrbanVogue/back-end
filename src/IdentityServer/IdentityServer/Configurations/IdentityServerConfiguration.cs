@@ -31,7 +31,7 @@ namespace IdentityServer.Configurations
                         ClientId = "Angular-Client",
                         ClientName = "angular-client",
                         AllowedGrantTypes = GrantTypes.Code,
-                        RedirectUris = new List<string>{ "http://localhost:4200" },
+                        RedirectUris = new List<string>{ "http://localhost:4200", "https://oauth.pstmn.io/v1/callback" },
                         RequirePkce = true,
                         AllowAccessTokensViaBrowser = true,
                         AllowedScopes = {
@@ -48,32 +48,18 @@ namespace IdentityServer.Configurations
                    {
                        ClientId = "Maui-Client",
                        ClientName = "maui-client",
-                       AllowedGrantTypes = GrantTypes.Code,
-                      
-                       RedirectUris = _mobileClientConfiguration.RedirectUris,
-                       RequireConsent = false,
-                       RequirePkce = true,
-                       RequireClientSecret = true,
-                       PostLogoutRedirectUris = _mobileClientConfiguration.PostLogoutRedirectUris,
-                       AllowedCorsOrigins = _mobileClientConfiguration.AllowedCorsOrigins,
-                       AllowedScopes = new List<string>
-                       {
-                           IdentityServerConstants.StandardScopes.OpenId,
-                           IdentityServerConstants.StandardScopes.Profile,
-                       },
-                       ClientSecrets = _mobileClientConfiguration.ClientSecrets.Select(secret => new Secret {Value = secret}).ToList(),
-                       AllowAccessTokensViaBrowser = true
-                   },
-                   new()
-                   {
-                       ClientId = "Maui-Client-Credentials",
-                       ClientName = "maui-client Credentials",
-                       AllowedGrantTypes = GrantTypes.ClientCredentials,
+                       AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                       AllowOfflineAccess = true,
                        ClientSecrets =
                        {
                            new Secret { Value = "ClientSecret1".Sha256()}
                        },
-                       AllowedScopes = { "CatalogAPI.read", "CatalogAPI.write" }
+                       AllowedScopes = { 
+                           "CatalogAPI.read", 
+                           "CatalogAPI.write", 
+                           IdentityServerConstants.StandardScopes.Profile, 
+                           IdentityServerConstants.StandardScopes.OpenId, 
+                       }
                    },
             };
 

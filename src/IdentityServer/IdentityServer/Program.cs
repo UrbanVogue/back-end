@@ -6,6 +6,7 @@ using IdentityServer.Data;
 using IdentityServer.Configurations;
 using EmailService;
 using IdentityServer.Seeder;
+using IdentityServer4.AspNetIdentity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLogging();
@@ -48,7 +49,8 @@ builder.Services.AddIdentityServer()
 
         options.EnableTokenCleanup = true;
     })
-    .AddDeveloperSigningCredential();
+    .AddDeveloperSigningCredential()
+    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<IdentityUser>>();
 
 builder.Services.ConfigureApplicationCookie(config =>
 {
