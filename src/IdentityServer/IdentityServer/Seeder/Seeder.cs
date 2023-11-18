@@ -3,6 +3,7 @@ using Bogus;
 using IdentityModel;
 using IdentityServer.Configurations;
 using IdentityServer.Data;
+using IdentityServer.Models;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Identity;
@@ -41,14 +42,14 @@ namespace IdentityServer.Seeder
         private static async Task EnsureSeedUsersAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
-            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             var countUsers = userMgr.Users.Count();
 
             if (countUsers == 0)
             {
-                List<string> userNames = new() { "User", "Admin" };
+                List<string> userNames = new() { "user@gmail.com", "admin@gmail.com" };
 
                 foreach (var username in userNames)
                 {
@@ -64,9 +65,11 @@ namespace IdentityServer.Seeder
                         continue;
                     }
 
-                    user = new Faker<IdentityUser>()
+                    user = new Faker<User>()
                         .RuleFor(u => u.UserName, username)
-                        .RuleFor(u => u.Email, f => f.Internet.Email())
+                        .RuleFor(u => u.FirstName, f => f.Person.FirstName)
+                        .RuleFor(u => u.LastName, f => f.Person.LastName)
+                        .RuleFor(u => u.Email, username)
                         .RuleFor(u => u.EmailConfirmed, true).Generate();
                     var result = await userMgr.CreateAsync(user, "Pass123$");
 
@@ -86,8 +89,8 @@ namespace IdentityServer.Seeder
                         user,
                         new Claim[]
                         {
-                            new Claim(JwtClaimTypes.GivenName, user.UserName),
-                            new Claim(JwtClaimTypes.Name, user.UserName),
+                            new Claim(JwtClaimTypes.GivenName, user.FirstName),
+                            new Claim(JwtClaimTypes.FamilyName, user.LastName),
                             new Claim(JwtClaimTypes.Email, user.Email)
                         });
 

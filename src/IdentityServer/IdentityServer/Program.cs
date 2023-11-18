@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using IdentityServer.Data;
 using IdentityServer.Configurations;
 using EmailService;
+using IdentityServer.Models;
 using IdentityServer.Seeder;
 using IdentityServer4.AspNetIdentity;
 
@@ -28,7 +29,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<AspNetCoreIdentityDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AspNetCoreIdentityDbContext>()
     .AddDefaultTokenProviders();
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
@@ -50,8 +51,8 @@ builder.Services.AddIdentityServer()
         options.EnableTokenCleanup = true;
     })
     .AddDeveloperSigningCredential()
-    .AddAspNetIdentity<IdentityUser>()
-    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<IdentityUser>>();
+    .AddAspNetIdentity<User>()
+    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<User>>();
 
 builder.Services.ConfigureApplicationCookie(config =>
 {
