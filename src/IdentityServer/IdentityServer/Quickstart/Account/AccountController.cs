@@ -41,8 +41,8 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
 
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
         private readonly IMailSender _emailSender;
 
         public AccountController(
@@ -50,9 +50,9 @@ namespace IdentityServerHost.Quickstart.UI
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            SignInManager<IdentityUser> signInManager,
+            SignInManager<User> signInManager,
             IMailSender emailSender,
-            UserManager<IdentityUser> userManager)
+            UserManager<User> userManager)
         {
             _interaction = interaction;
             _clientStore = clientStore;
@@ -375,7 +375,6 @@ namespace IdentityServerHost.Quickstart.UI
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(UserRegistrationModel userModel)
         {
             if (!ModelState.IsValid)
@@ -383,9 +382,11 @@ namespace IdentityServerHost.Quickstart.UI
                 return View(userModel);
             }
 
-            var user = new IdentityUser 
-            { 
+            var user = new User() 
+            {
                 UserName = userModel.Email,
+                FirstName = userModel.FirstName,
+                LastName = userModel.LastName,
                 Email = userModel.Email,
             };       
 
