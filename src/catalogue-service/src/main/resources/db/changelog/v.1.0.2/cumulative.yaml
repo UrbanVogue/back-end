@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: 2023-11-12-01-create-table-product-item.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-11-12-02-insert-product-items.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-11-12-03-add-description-column-product-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2023-11-12-04-alter-description-value-product-table.yaml
+      relativeToChangelogFile: true

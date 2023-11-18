@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023-11-12-02-insert-product-items
+      author: ikew_trip
+      changes:
+        - insert:
+            tableName: product_item
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: product_id
+                  value: 1
+              - column:
+                  name: color
+                  value: "Black"
+              - column:
+                  name: size
+                  value: "M"
+        - insert:
+            tableName: product_item
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: product_id
+                  value: 2
+              - column:
+                  name: color
+                  value: "Black"
+              - column:
+                  name: size
+                  value: "L"
+        - insert:
+            tableName: product_item
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: product_id
+                  value: 3
+              - column:
+                  name: color
+                  value: "Black"
+              - column:
+                  name: size
+                  value: "43"
+        - insert:
+            tableName: product_item
+            columns:
+              - column:
+                  name: id
+                  value: 4
+              - column:
+                  name: product_id
+                  value: 4
+              - column:
+                  name: color
+                  value: "White"
+              - column:
+                  name: size
+                  value: "M"
+        - insert:
+            tableName: product_item
+            columns:
+              - column:
+                  name: id
+                  value: 5
+              - column:
+                  name: product_id
+                  value: 5
+              - column:
+                  name: color
+                  value: "White"
+              - column:
+                  name: size
+                  value: "L"

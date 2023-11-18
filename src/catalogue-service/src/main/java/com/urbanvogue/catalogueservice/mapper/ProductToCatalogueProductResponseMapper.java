@@ -11,6 +11,7 @@ public class ProductToCatalogueProductResponseMapper implements Function<Product
     @Override
     public CatalogueProductResponse apply(Product product) {
         return new CatalogueProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getBasePrice(),
                 product.getDiscountPrice(),

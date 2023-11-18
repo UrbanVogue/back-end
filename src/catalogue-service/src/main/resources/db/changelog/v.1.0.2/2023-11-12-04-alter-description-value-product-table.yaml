@@ -1,0 +1,40 @@
+databaseChangeLog:
+    - changeSet:
+        id: 2023-11-12-04-alter-description-value-product-table
+        author: ikew_trip
+        changes:
+            - update:
+                tableName: product
+                columns:
+                    - column:
+                        name: description
+                        value: "This is a pair of pants"
+                where: id = 1
+            - update:
+                tableName: product
+                columns:
+                    - column:
+                        name: description
+                        value: "This is a shirt"
+                where: id = 2
+            - update:
+                tableName: product
+                columns:
+                    - column:
+                        name: description
+                        value: "This is a pair of shoes"
+                where: id = 3
+            - update:
+                tableName: product
+                columns:
+                    - column:
+                        name: description
+                        value: "This is a pair of socks"
+                where: id = 4
+            - update:
+                tableName: product
+                columns:
+                    - column:
+                        name: description
+                        value: "This is a hat"
+                where: id = 5

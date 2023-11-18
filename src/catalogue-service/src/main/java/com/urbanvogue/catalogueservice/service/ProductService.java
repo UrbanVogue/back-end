@@ -28,12 +28,10 @@ public class ProductService {
 
         List<Product> products = productRepository.findAllCatalogueProducts();
 
-        List<CatalogueProductResponse> catalogueProductResponses = products
+        return products
                 .stream()
                 .map(productToCatalogueProductResponseMapper)
                 .collect(Collectors.toList());
-
-        return catalogueProductResponses;
     }
 
     public DetailedProductResponse getDetailedProductById(Long id) {

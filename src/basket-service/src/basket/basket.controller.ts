@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Delete } from '@nestjs/common';
 import { BasketService } from './basket.service';
 import { Basket } from 'src/basket/interfaces/Basket';
+import { UpdateBasketDto } from './dto/update-basket.dto';
 
 @Controller('api/v1/basket')
 export class BasketController {
@@ -12,7 +13,7 @@ export class BasketController {
   }
 
   @Post()
-  async updateBasket(@Body() basket: Basket): Promise<Basket> {
+  async updateBasket(@Body() basket: UpdateBasketDto): Promise<Basket> {
     return this.basketService.updateBasket(basket);
   }
 

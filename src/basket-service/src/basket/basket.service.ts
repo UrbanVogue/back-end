@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import Redis from 'ioredis';
 import { Basket } from 'src/basket/interfaces/Basket';
 import { countTotalPrice } from 'src/util';
+import { UpdateBasketDto } from './dto/update-basket.dto';
 
 @Injectable()
 export class BasketService {
@@ -15,14 +16,15 @@ export class BasketService {
     const basket = await this.redis.get(userName);
 
     if (!basket) {
-      return null;
+      throw new NotFoundException('Basket not found');
     }
+
     const basketJson = JSON.parse(basket);
     basketJson.totalPrice = countTotalPrice(basketJson.items);
     return basketJson;
   }
 
-  async updateBasket(basket: Basket): Promise<Basket> {
+  async updateBasket(basket: UpdateBasketDto): Promise<Basket> {
     await this.redis.set(
       basket.username,
       JSON.stringify(basket),
