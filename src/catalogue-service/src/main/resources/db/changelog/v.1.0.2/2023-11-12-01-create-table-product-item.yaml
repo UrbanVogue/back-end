@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+        id: 2023-11-12-01-create-table-product-item
+        author: ikew_trip
+        changes:
+          - createTable:
+              tableName: product_item
+              columns:
+                - column:
+                    name: id
+                    type: serial
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: product_id
+                    type: bigint
+                - column:
+                    name: color
+                    type: varchar(255)
+                - column:
+                    name: size
+                    type: varchar(255)
+          - addForeignKeyConstraint:
+              baseTableName: product_item
+              baseColumnNames: product_id
+              referencedTableName: product
+              referencedColumnNames: id
+              constraintName: FK_product_item_product

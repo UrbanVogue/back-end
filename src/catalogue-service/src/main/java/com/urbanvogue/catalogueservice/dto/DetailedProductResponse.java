@@ -1,6 +1,7 @@
 package com.urbanvogue.catalogueservice.dto;
 
 import com.urbanvogue.catalogueservice.entity.Image;
+import com.urbanvogue.catalogueservice.entity.ProductItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 public class DetailedProductResponse {
 
+    private Long id;
+
     private String name;
 
     private BigDecimal basePrice;
@@ -24,5 +27,9 @@ public class DetailedProductResponse {
 
     private float rating;
 
+    private String description;
+
     private List<Image> images;
+
+    private List<ProductItem> productItems;
 }

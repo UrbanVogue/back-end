@@ -12,10 +12,13 @@ public class ProductToDetailedProductResponseMapper implements Function<Product,
     @Override
     public DetailedProductResponse apply(Product product) {
         return new DetailedProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getBasePrice(),
                 product.getDiscountPrice(),
                 product.getRating(),
-                product.getImages());
+                product.getDescription(),
+                product.getImages(),
+                product.getProductItems());
     }
 }
