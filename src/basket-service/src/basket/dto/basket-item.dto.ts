@@ -11,6 +11,10 @@ export class Item {
   color: string;
 
   @IsNotEmpty()
+  @IsString()
+  size: string;
+
+  @IsNotEmpty()
   @IsNumber()
   @Min(0)
   price: number;
