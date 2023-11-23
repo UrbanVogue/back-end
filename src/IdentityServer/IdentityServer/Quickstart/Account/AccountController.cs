@@ -421,14 +421,7 @@ namespace IdentityServerHost.Quickstart.UI
                             new Claim(JwtClaimTypes.FamilyName, userModel.LastName),
                     });
 
-            var isuser = new IdentityServerUser(user.Id)
-            {
-                DisplayName = user.UserName
-            };
-
-            await HttpContext.SignInAsync(isuser);
-
-            return Redirect("/diagnostics");
+            return RedirectToAction("Login");
         }
 
         [HttpGet]
