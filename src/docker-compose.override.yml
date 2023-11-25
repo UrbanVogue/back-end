@@ -12,6 +12,33 @@ services:
     ports:
       - "5003:80"
 
+  order.db:
+    container_name: order.db
+    environment:
+        SA_PASSWORD: "Your_Strong_Password"
+        ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+        - "8080:8080"
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+        - "5672:5672"
+        - "15672:15672"
+
+  ordering.service:
+    container_name: ordering.service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=Your_Strong_Password"  
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+        - order.db
+        - rabbitmq
+    ports:
+        - "8004:80"
 
   catalogue.service:
     image: ${DOCKER_REGISTRY-}catalogue-service

@@ -45,6 +45,21 @@ services:
   basket.cache:
     container_name: basket-cache-redis    
     image: redis:alpine
+
+  order.db:
+    container_name: order-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+
+  ordering.service:
+    container_name: ordering-service
+    image: ${DOCKER_REGISTRY-}ordering-service
+    build:
+      context: .
+      dockerfile: order-service/Ordering.API/Ordering.API/Dockerfile
   
 volumes:
   catalogue_db_data:
