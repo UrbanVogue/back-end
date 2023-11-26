@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Ordering.Application.Features.Orders.Queries.GetOrder;
 
 namespace Ordering.API.Controllers
 {
@@ -23,7 +24,7 @@ namespace Ordering.API.Controllers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        [HttpGet("{userName}", Name = "GetOrder")]
+        [HttpGet("{userName}", Name = "GetOrders")]
         [ProducesResponseType(typeof(IEnumerable<OrdersVm>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<OrdersVm>>> GetOrdersByUserName(string userName)
         {
@@ -60,6 +61,15 @@ namespace Ordering.API.Controllers
             var command = new DeleteOrderCommand() { Id = id };
             await _mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("getOrder/{id}", Name = "GetOrder")]
+        [ProducesResponseType(typeof(OrderVm), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<OrderVm>> GetOrderById(int id)
+        {
+            var query = new GetOrderQuery(id);
+            var order = await _mediator.Send(query);
+            return Ok(order);
         }
     }
 }
