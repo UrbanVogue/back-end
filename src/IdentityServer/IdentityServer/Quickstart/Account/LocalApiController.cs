@@ -13,13 +13,11 @@ namespace IdentityServer.Quickstart.Account;
 [Route("user")]
 public class LocalApiController : ControllerBase
 {
-    private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
 
-    public LocalApiController(UserManager<User> userManager, SignInManager<User> signInManager)
+    public LocalApiController(UserManager<User> userManager)
     {
         _userManager = userManager;
-        _signInManager = signInManager;
     }
 
     [HttpPut]
@@ -67,7 +65,7 @@ public class LocalApiController : ControllerBase
             if (result.Succeeded)
             {
                 // If the update is successful, return the updated user
-                return Ok(user.Id);
+                return Ok();
             }
 
             // Handling errors during the update process

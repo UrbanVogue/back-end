@@ -39,7 +39,6 @@ namespace IdentityServer.Configurations
                         AllowedScopes = {
                             IdentityServerConstants.StandardScopes.OpenId,
                             IdentityServerConstants.StandardScopes.Profile,
-                            IdentityServerConstants.LocalApi.ScopeName
                         },
                         AllowedCorsOrigins = { "http://localhost:4200" },
                         RequireClientSecret = false,
@@ -85,7 +84,6 @@ namespace IdentityServer.Configurations
                    ApiSecrets = new Secret[] {new("ScopeSecret".Sha256())},
                    UserClaims = new string[] { "role"}
                },
-               new ApiResource(IdentityServerConstants.LocalApi.ScopeName),
           };
 
         public IEnumerable<IdentityResource> GetIdentityResources() =>
