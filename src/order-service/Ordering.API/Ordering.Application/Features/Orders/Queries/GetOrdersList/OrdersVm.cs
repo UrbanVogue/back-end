@@ -1,4 +1,7 @@
-﻿namespace Ordering.Application.Features.Orders.Queries.GetOrdersList
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Ordering.Application.Features.Orders.Queries.GetOrdersList
 {
     public class OrdersVm
     {
@@ -21,5 +24,6 @@
         public string Expiration { get; set; }
         public string CVV { get; set; }
         public int PaymentMethod { get; set; }
+        public ICollection<ItemDto> Items { get; set; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Ordering.Domain.Common;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Ordering.Domain.Entities
 {
@@ -21,6 +23,7 @@ namespace Ordering.Domain.Entities
         public string CardNumber { get; set; }
         public string Expiration { get; set; }
         public string CVV { get; set; }
-        public int PaymentMethod { get; set; }
+        public int? PaymentMethod { get; set; }
+        public ICollection<Item> Items { get; set; }
     }
 }
