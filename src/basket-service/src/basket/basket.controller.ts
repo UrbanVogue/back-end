@@ -35,7 +35,7 @@ export class BasketController {
       throw new NotFoundException("Basket not found");
     }
     
-    const response = await axios.post('http://localhost:8004/api/v1/Order', basket);
+    await axios.post('http://ordering.service:80/api/v1/Order', basket);
     
     return this.basketService.deleteBasket(username);
   }
