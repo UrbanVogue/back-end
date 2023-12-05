@@ -63,15 +63,6 @@ builder.Services.ConfigureApplicationCookie(config =>
     config.Cookie.SameSite = SameSiteMode.None;
     config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
-builder.Services.AddLocalApiAuthentication();
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(IdentityServerConstants.LocalApi.PolicyName, policy =>
-    {
-        policy.AddAuthenticationSchemes(IdentityServerConstants.LocalApi.AuthenticationScheme);
-        policy.RequireAuthenticatedUser();
-    });
-});
 
 var app = builder.Build();
 
@@ -87,7 +78,6 @@ app.UseCors(policyBuilder =>
 });
 
 app.UseIdentityServer();
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>

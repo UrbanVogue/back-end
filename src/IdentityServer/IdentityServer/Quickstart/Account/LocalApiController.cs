@@ -10,8 +10,7 @@ using System.Security.Claims;
 
 namespace IdentityServer.Quickstart.Account;
 
-[Route("localApi")]
-//[Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+[Route("user")]
 public class LocalApiController : ControllerBase
 {
     private readonly SignInManager<User> _signInManager;
@@ -23,7 +22,7 @@ public class LocalApiController : ControllerBase
         _signInManager = signInManager;
     }
 
-     [HttpPut("update")]
+    [HttpPut]
     public async Task<IActionResult> UpdateProfile([FromBody] User userModel)
     {
         // Retrieve the access token from the Authorization header
@@ -68,7 +67,7 @@ public class LocalApiController : ControllerBase
             if (result.Succeeded)
             {
                 // If the update is successful, return the updated user
-                return Ok(user);
+                return Ok(user.Id);
             }
 
             // Handling errors during the update process
