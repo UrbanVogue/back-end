@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Ordering.Application.Features.Orders.Commands.UpdateOrder
 {
@@ -23,5 +25,6 @@ namespace Ordering.Application.Features.Orders.Commands.UpdateOrder
         public string Expiration { get; set; }
         public string CVV { get; set; }
         public int PaymentMethod { get; set; }
+        public ICollection<ItemDto> Items { get; set; }
     }
 }
