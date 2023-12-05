@@ -29,14 +29,17 @@ export class BasketController {
 
   @Post('checkout/:username')
   @HttpCode(202)
-  async checkout(@Param('username') username: string): Promise<void> {
+  async checkout(@Param('username') username: string): Promise<object> {
     const basket = await this.basketService.getBasket(username); 
     if (!basket) {
       throw new NotFoundException("Basket not found");
     }
     
     await axios.post('http://ordering.service:80/api/v1/Order', basket);
-    
-    return this.basketService.deleteBasket(username);
+    await this.basketService.deleteBasket(username);
+    return { 
+      message: 'Checkout successful',
+      successful: true
+    };
   }
 }
