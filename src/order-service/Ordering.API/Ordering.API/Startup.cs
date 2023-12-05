@@ -30,7 +30,7 @@ namespace Ordering.API
             services.AddApplicationServices();
             services.AddInfrastructureServices(Configuration);
 
-            // MassTransit-RabbitMQ Configuration
+            /*// MassTransit-RabbitMQ Configuration
             services.AddMassTransit(config =>
             {
 
@@ -47,7 +47,7 @@ namespace Ordering.API
                     });
                 });
             });
-            services.AddMassTransitHostedService();
+            services.AddMassTransitHostedService();*/
 
             // General Configuration
             services.AddScoped<BasketCheckoutConsumer>();

@@ -14,9 +14,9 @@ namespace Ordering.Application.Features.Orders.Commands.CheckoutOrder
             /*RuleFor(p => p.EmailAddress)
                .NotEmpty().WithMessage("{EmailAddress} is required.");*/
 
-            /*RuleFor(p => p.TotalPrice)
+            RuleFor(p => p.TotalPrice)
                 .NotEmpty().WithMessage("{TotalPrice} is required.")
-                .GreaterThan(0).WithMessage("{TotalPrice} should be greater than zero.");*/
+                .GreaterThan(0).WithMessage("{TotalPrice} should be greater than zero.");
         }
     }
 }
