@@ -37,6 +37,9 @@ export class BasketController {
     
     await axios.post('http://ordering.service:80/api/v1/Order', basket);
     await this.basketService.deleteBasket(username);
-    return { message: 'Checkout successful' };
+    return { 
+      message: 'Checkout successful',
+      successful: true
+    };
   }
 }
