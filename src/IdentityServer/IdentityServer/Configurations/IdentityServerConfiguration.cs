@@ -39,6 +39,7 @@ namespace IdentityServer.Configurations
                         AllowedScopes = {
                             IdentityServerConstants.StandardScopes.OpenId,
                             IdentityServerConstants.StandardScopes.Profile,
+                            IdentityServerConstants.LocalApi.ScopeName
                         },
                         AllowedCorsOrigins = { "http://localhost:4200" },
                         RequireClientSecret = false,
@@ -70,6 +71,7 @@ namespace IdentityServer.Configurations
         public IEnumerable<ApiScope> GetApiScopes() =>
            new ApiScope[]
            {
+               new("IdentityServerApi"),
                new("CatalogAPI.read"),
                new("CatalogAPI.write")
            };
@@ -82,7 +84,8 @@ namespace IdentityServer.Configurations
                    Scopes = new string[] { "CatalogAPI.read" , "CatalogAPI.write" },
                    ApiSecrets = new Secret[] {new("ScopeSecret".Sha256())},
                    UserClaims = new string[] { "role"}
-               }
+               },
+               new ApiResource(IdentityServerConstants.LocalApi.ScopeName),
           };
 
         public IEnumerable<IdentityResource> GetIdentityResources() =>
@@ -96,7 +99,6 @@ namespace IdentityServer.Configurations
                   Name = "role",
                   UserClaims = new string[] {"role"}
               }
-
           };
     }
 }
