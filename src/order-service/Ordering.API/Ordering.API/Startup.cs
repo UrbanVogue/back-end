@@ -77,6 +77,13 @@ namespace Ordering.API
 
             app.UseAuthorization();
 
+            app.UseCors(policyBuilder =>
+            {
+                policyBuilder.AllowAnyOrigin();
+                policyBuilder.AllowAnyMethod();
+                policyBuilder.AllowAnyHeader();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
