@@ -21,5 +21,7 @@ namespace IdentityServer.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         [Display(Name ="Confirm Password")]
         public string ConfirmPassword { get; set; }
+        
+        public string ReturnUrl { get; set; }
     }
 }
