@@ -25,4 +25,7 @@ public class ProductItem {
 
     @Column(name ="color")
     private String color;
+
+    @Column(name ="color_code")
+    private String colorCode;
 }

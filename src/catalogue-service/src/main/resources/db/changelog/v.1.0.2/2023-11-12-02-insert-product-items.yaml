@@ -16,6 +16,9 @@ databaseChangeLog:
                   name: color
                   value: "Black"
               - column:
+                  name: color_code
+                  value: "#000000"
+              - column:
                   name: size
                   value: "M"
         - insert:
@@ -30,6 +33,9 @@ databaseChangeLog:
               - column:
                   name: color
                   value: "Black"
+              - column:
+                  name: color_code
+                  value: "#000000"
               - column:
                   name: size
                   value: "L"
@@ -46,6 +52,9 @@ databaseChangeLog:
                   name: color
                   value: "Black"
               - column:
+                  name: color_code
+                  value: "#000000"
+              - column:
                   name: size
                   value: "43"
         - insert:
@@ -61,6 +70,9 @@ databaseChangeLog:
                   name: color
                   value: "White"
               - column:
+                  name: color_code
+                  value: "#FFFFFF"
+              - column:
                   name: size
                   value: "M"
         - insert:
@@ -75,6 +87,9 @@ databaseChangeLog:
               - column:
                   name: color
                   value: "White"
+              - column:
+                  name: color_code
+                  value: "#FFFFFF"
               - column:
                   name: size
                   value: "L"

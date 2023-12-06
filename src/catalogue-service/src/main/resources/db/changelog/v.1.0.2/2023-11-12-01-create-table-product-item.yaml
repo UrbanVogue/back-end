@@ -20,6 +20,9 @@ databaseChangeLog:
                     name: color
                     type: varchar(255)
                 - column:
+                    name: color_code
+                    type: varchar(255)
+                - column:
                     name: size
                     type: varchar(255)
           - addForeignKeyConstraint:
