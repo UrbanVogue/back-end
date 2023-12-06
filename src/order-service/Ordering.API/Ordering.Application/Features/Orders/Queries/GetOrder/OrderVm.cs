@@ -16,6 +16,7 @@ namespace Ordering.Application.Features.Orders.Queries.GetOrder
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string EmailAddress { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string AddressLine { get; set; }
         public string Country { get; set; }
         public string State { get; set; }
