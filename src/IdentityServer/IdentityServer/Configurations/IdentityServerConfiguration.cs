@@ -70,6 +70,7 @@ namespace IdentityServer.Configurations
         public IEnumerable<ApiScope> GetApiScopes() =>
            new ApiScope[]
            {
+               new("IdentityServerApi"),
                new("CatalogAPI.read"),
                new("CatalogAPI.write")
            };
@@ -82,7 +83,7 @@ namespace IdentityServer.Configurations
                    Scopes = new string[] { "CatalogAPI.read" , "CatalogAPI.write" },
                    ApiSecrets = new Secret[] {new("ScopeSecret".Sha256())},
                    UserClaims = new string[] { "role"}
-               }
+               },
           };
 
         public IEnumerable<IdentityResource> GetIdentityResources() =>
@@ -96,7 +97,6 @@ namespace IdentityServer.Configurations
                   Name = "role",
                   UserClaims = new string[] {"role"}
               }
-
           };
     }
 }

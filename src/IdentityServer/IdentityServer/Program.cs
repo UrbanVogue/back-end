@@ -7,7 +7,9 @@ using IdentityServer.Configurations;
 using EmailService;
 using IdentityServer.Models;
 using IdentityServer.Seeder;
+using IdentityServer4;
 using IdentityServer4.AspNetIdentity;
+using IdentityServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLogging();
@@ -52,6 +54,7 @@ builder.Services.AddIdentityServer()
     })
     .AddDeveloperSigningCredential()
     .AddAspNetIdentity<User>()
+     .AddProfileService<ProfileService>()
     .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<User>>();
 
 builder.Services.ConfigureApplicationCookie(config =>
@@ -75,7 +78,6 @@ app.UseCors(policyBuilder =>
 });
 
 app.UseIdentityServer();
-
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>

@@ -65,6 +65,7 @@ namespace IdentityServerHost.Quickstart.UI
             _userManager = userManager;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> ChangeEmail(string username)
         {
@@ -422,7 +423,7 @@ namespace IdentityServerHost.Quickstart.UI
             if (User?.Identity.IsAuthenticated == true)
             {
                 // delete local authentication cookie
-                await HttpContext.SignOutAsync();
+                await HttpContext.SignOutAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme);
 
                 // raise the logout event
                 await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
@@ -440,8 +441,11 @@ namespace IdentityServerHost.Quickstart.UI
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
             }
 
+            Response.Cookies.Delete("IdentityServer.Cookie");
+
             return View("LoggedOut", vm);
         }
+        
 
         [HttpGet]
         public IActionResult AccessDenied()
@@ -450,9 +454,10 @@ namespace IdentityServerHost.Quickstart.UI
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Register(string returnUrl)
         {
-            return View();
+            var model = new UserRegistrationModel { ReturnUrl = returnUrl };
+            return View(model);
         }
 
         [HttpPost]
@@ -498,11 +503,12 @@ namespace IdentityServerHost.Quickstart.UI
                     user,
                     new Claim[]
                     {
+                            new Claim(JwtClaimTypes.Email, userModel.Email),
                             new Claim(JwtClaimTypes.GivenName, userModel.FirstName),
                             new Claim(JwtClaimTypes.FamilyName, userModel.LastName),
                     });
 
-            return RedirectToAction("Login");
+            return RedirectToAction("Login", new { userModel.ReturnUrl });
         }
 
         [HttpGet]
