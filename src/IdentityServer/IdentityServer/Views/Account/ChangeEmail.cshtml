@@ -19,6 +19,11 @@
                             <input class="form-control" placeholder="New Email" asp-for="NewEmail" autofocus>
                         </div>
 
+                        <div class="form-group">
+                            <label asp-for="Password"></label>
+                            <input type="password" class="form-control" placeholder="Password" asp-for="Password">
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Change Email</button>
                         <a asp-action="Login" asp-controller="Account" class="btn btn-secondary">Back to Login</a>
                     </form>

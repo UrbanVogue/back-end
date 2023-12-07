@@ -93,6 +93,13 @@ namespace IdentityServerHost.Quickstart.UI
                 return NotFound();
             }
 
+            var passwordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+            if (!passwordValid)
+            {
+                ModelState.AddModelError("Password", "Invalid password.");
+                return View(model);
+            }
+
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
             if (string.IsNullOrEmpty(token))
             {
@@ -325,6 +332,19 @@ namespace IdentityServerHost.Quickstart.UI
 
                 if(user is not null)
                 {
+                    if (!user.IsActive)
+                    {
+                        user.IsActive = true;
+                        user.LastInactiveDate = null;
+
+                        var result = await _userManager.UpdateAsync(user);
+                        if (!result.Succeeded)
+                        {
+                            await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "Can not activate user account", clientId: context?.Client.ClientId));
+                            ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+                        }
+                    }
+
                     var userLogin = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
 
                     if (userLogin == Microsoft.AspNetCore.Identity.SignInResult.Success)
