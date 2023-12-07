@@ -5,6 +5,7 @@
 using EmailService;
 using IdentityModel;
 using IdentityServer.Models;
+using IdentityServer.Quickstart.Models;
 using IdentityServer4;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -15,6 +16,7 @@ using IdentityServer4.Test;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -62,6 +64,85 @@ namespace IdentityServerHost.Quickstart.UI
             _emailSender = emailSender;
             _userManager = userManager;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangeEmail(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var model = new ChangeEmailModel { Username = user.UserName };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmail(ChangeEmailModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByNameAsync(model.Username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            // Send the token to the new email address
+            var callbackUrl = Url.Action("ChangeEmailCallback", "Account", new { userId = user.Id, email = model.NewEmail, token }, Request.Scheme);
+            var emailContent = $"To change your email address, please <a href='{callbackUrl}'>click here</a>.";
+            var message = new Message(new string[] { model.NewEmail }, "Change Email Request", emailContent);
+
+            try
+            {
+                await _emailSender.SendEmailAsync(message);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return RedirectToAction(nameof(EmailSentConfirmation));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangeEmailCallback(string userId, string email, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            var result = await _userManager.ChangeEmailAsync(user, email, token);
+            if (!result.Succeeded)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            await _userManager.SetUserNameAsync(user, email);
+            return RedirectToAction(nameof(EmailChangedConfirmation));
+        }
+        public IActionResult EmailSentConfirmation()
+        {
+            return View();
+        }
+
+        public IActionResult EmailChangedConfirmation()
+        {
+            return View();
+        }
+
 
         [HttpGet]
         public IActionResult ForgotPassword()

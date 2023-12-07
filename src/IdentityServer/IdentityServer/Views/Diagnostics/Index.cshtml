@@ -64,6 +64,10 @@
                     <input type="hidden" name="username" value="@Context.User?.GetDisplayName()" />
                     <button class="btn btn-primary" asp-controller="Account" asp-action="ChangePassword">Change Password</button>
                 </form>
+                <form class="mt-3" asp-controller="Account" asp-action="ChangeEmail" method="get">
+                    <input type="hidden" name="username" value="@Context.User?.Identity.Name" />
+                    <button class="btn btn-primary">Change Email</button>
+                </form>
             </div>
         </div> 
     </div>

@@ -1,0 +1,29 @@
+﻿@model IdentityServer.Quickstart.Models.ChangeEmailModel
+
+<div class="login-page">
+    <div class="lead">
+        <h1>Change Email</h1>
+    </div>
+
+    <partial name="_ValidationSummary" />
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="ChangeEmail" method="post">
+                        <input type="hidden" asp-for="Username" />
+
+                        <div class="form-group">
+                            <label asp-for="NewEmail"></label>
+                            <input class="form-control" placeholder="New Email" asp-for="NewEmail" autofocus>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Change Email</button>
+                        <a asp-action="Login" asp-controller="Account" class="btn btn-secondary">Back to Login</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
